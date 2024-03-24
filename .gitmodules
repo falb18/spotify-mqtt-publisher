@@ -1,0 +1,3 @@
+[submodule "mpris2"]
+	path = mpris2
+	url = https://github.com/hugosenari/mpris2
