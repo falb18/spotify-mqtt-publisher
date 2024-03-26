@@ -1,6 +1,24 @@
 import time
 import argparse
 from paho.mqtt import client as mqtt_client
+from mpris2.mpris2 import player, interfaces
+from mpris2.mpris2.types import Metadata_Map
+
+# MPRIS2 helper functions and variables
+#------------------------------------------------------------------------------
+
+spotify_bus_name = f"{interfaces.Interfaces.MEDIA_PLAYER}.spotify"
+spotify_player = player.Player(dbus_interface_info={'dbus_uri': spotify_bus_name})
+
+def get_metadata_from_player() -> None:
+    if spotify_player.PlaybackStatus == "Playing" or spotify_player.PlaybackStatus == "Paused":
+        print("Current track information:")
+        print(f"  Title:  {spotify_player.Metadata[Metadata_Map.TITLE]}")
+        print(f"  Album:  {spotify_player.Metadata[Metadata_Map.ALBUM]}")
+        # Dbus Array of strings, we need the first element for the artist's name
+        print(f"  Artist: {spotify_player.Metadata[Metadata_Map.ARTIST][0]}")
+
+    None
 
 mqtt_broker = "localhost"
 mqtt_port = 1883
@@ -18,6 +36,8 @@ def on_connect_cbk(client, userdata, flags, reason_code, properties):
     
 def on_disconnect_cbk(client, userdata, flags, reason_code, properties):
     print(f"Disconnected from {client.host} with reason code: {reason_code}.")
+
+#------------------------------------------------------------------------------
 
 def connect_mqtt():
     client = mqtt_client.Client(
@@ -47,6 +67,7 @@ def run_publisher():
     try:
         count = 0
         while True:
+            get_metadata_from_player()
             message = f"Test message {count}"
             client.publish(topic, message)
             print(f"Published: {message}")
