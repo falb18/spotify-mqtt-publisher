@@ -26,9 +26,10 @@ def get_metadata_from_player() -> list:
 # Spotify MQTT publisher:
 #------------------------------------------------------------------------------
 
-mqtt_broker = "localhost"
-mqtt_port = 1883
-mqtt_client_id = "spotify-pub"
+# Default values for the MQTT client
+broker = "localhost"
+port = 1883
+client_id = "spotify-pub"
 
 # Spotify's MQTT topics
 main_topic = "spotify"
@@ -55,7 +56,7 @@ def on_disconnect_cbk(client, userdata, flags, reason_code, properties):
 # Functions:
 #------------------------------------------------------------------------------
 
-def connect_mqtt():
+def connect_mqtt(mqtt_broker, mqtt_port, mqtt_client_id):
     client = mqtt_client.Client(
                 client_id=mqtt_client_id,
                 callback_api_version=mqtt_client.CallbackAPIVersion.VERSION2
@@ -68,8 +69,9 @@ def connect_mqtt():
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--broker', type=str, default=mqtt_broker)
-    parser.add_argument('--port', type=int, default=mqtt_port)
+    parser.add_argument('--broker', type=str, default=broker)
+    parser.add_argument('--port', type=int, default=port)
+    parser.add_argument('--id', type=str, default=client_id)
     return parser.parse_args()
 
 # Main loop:
@@ -77,10 +79,11 @@ def parse_args():
 
 def run_publisher():
     cmd_args = parse_args()
-    mqtt_client = cmd_args.broker
-    mqtt_client = cmd_args.port
+    _broker = cmd_args.broker
+    _port = cmd_args.port
+    _client_id = cmd_args.id
 
-    client = connect_mqtt()
+    client = connect_mqtt(mqtt_broker=_broker, mqtt_port=_port, mqtt_client_id=_client_id)
     print("To exit press Ctrl+c\n")
 
     try:
