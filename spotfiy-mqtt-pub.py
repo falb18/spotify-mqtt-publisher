@@ -53,10 +53,10 @@ def on_connect_cbk(client, userdata, flags, reason_code, properties):
 def on_disconnect_cbk(client, userdata, flags, reason_code, properties):
     print(f"Disconnected from {client.host} with reason code: {reason_code}.")
 
-# Functions:
+# Functions
 #------------------------------------------------------------------------------
 
-def connect_mqtt(mqtt_broker, mqtt_port, mqtt_client_id):
+def connect_mqtt(mqtt_broker, mqtt_port, mqtt_client_id) -> mqtt_client.Client:
     client = mqtt_client.Client(
                 client_id=mqtt_client_id,
                 callback_api_version=mqtt_client.CallbackAPIVersion.VERSION2
@@ -74,6 +74,7 @@ def parse_args():
     parser.add_argument('--id', type=str, default=client_id)
     return parser.parse_args()
 
+#------------------------------------------------------------------------------
 # Main loop:
 #------------------------------------------------------------------------------
 
@@ -97,7 +98,7 @@ def run_publisher():
             time.sleep(5)
     
     except KeyboardInterrupt:
-        print("Exiting...")
+        print(" Exiting...")
 
     client.disconnect()
     
