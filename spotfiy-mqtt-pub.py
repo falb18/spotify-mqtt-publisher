@@ -35,11 +35,11 @@ client_id = "spotify-pub"
 main_topic = "spotify"
 metadata_topic = f"{main_topic}/metadata"
 # track_title is a string type
-track_title_topic = f"{metadata_topic}/track_title"
+track_title_topic = f"{metadata_topic}/title"
 # album_name is a string type
-album_name_topic = f"{metadata_topic}/album_name"
+album_name_topic = f"{metadata_topic}/album"
 # track_artist is a string type
-track_artist_topic = f"{metadata_topic}/track_artist"
+track_artist_topic = f"{metadata_topic}/artist"
 
 # Callback functions for mqtt client
 #------------------------------------------------------------------------------
