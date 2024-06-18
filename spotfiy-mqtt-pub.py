@@ -1,15 +1,31 @@
 import time
 import argparse
+import sys
 from paho.mqtt import client as mqtt_client
 from mpris2.mpris2 import player, interfaces
 from mpris2.mpris2.types import Metadata_Map
+from dbus.exceptions import DBusException
 
 #------------------------------------------------------------------------------
 # MPRIS2 helper functions and variables:
 #------------------------------------------------------------------------------
 
+# Variables
+#------------------------------------------------------------------------------
+
 spotify_bus_name = f"{interfaces.Interfaces.MEDIA_PLAYER}.spotify"
-spotify_player = player.Player(dbus_interface_info={'dbus_uri': spotify_bus_name})
+
+# Try to open the Spotify's interface. In case is not possible catch the error and
+# close the program.
+try:
+    spotify_player = player.Player(dbus_interface_info={'dbus_uri': spotify_bus_name})
+except DBusException as dbus_exception:
+    print("Spotify app not running.")
+    print(f"{str(dbus_exception.get_dbus_name())}: {str(dbus_exception.get_dbus_message())}")
+    sys.exit(1)
+
+# Functions
+#------------------------------------------------------------------------------
 
 def get_metadata_from_player() -> list:
     metadata = list()
@@ -67,6 +83,10 @@ def connect_mqtt(mqtt_broker, mqtt_port, mqtt_client_id) -> mqtt_client.Client:
     client.connect(mqtt_broker, mqtt_port)
     return client
 
+#------------------------------------------------------------------------------
+# Util functions:
+#------------------------------------------------------------------------------
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--broker', type=str, default=broker)
@@ -85,7 +105,7 @@ def run_publisher():
     _client_id = cmd_args.id
 
     client = connect_mqtt(mqtt_broker=_broker, mqtt_port=_port, mqtt_client_id=_client_id)
-    print("To exit press Ctrl+c\n")
+    print("To exit press Ctrl+c")
 
     try:
         while True:
@@ -98,7 +118,7 @@ def run_publisher():
             time.sleep(5)
     
     except KeyboardInterrupt:
-        print(" Exiting...")
+        print("\nExiting...")
 
     client.disconnect()
     
